@@ -49,6 +49,7 @@ static int	run_at_secres(cron_db *);
 
 static time_t	last_time = 0;
 static int	dst_enabled = 0;
+static int	no_daemonize = 0;
 struct pidfh *pfh;
 
 static void
@@ -131,9 +132,9 @@ main(argc, argv)
 	/* if there are no debug flags turned on, fork as a daemon should.
 	 */
 # if DEBUGGING
-	if (DebugFlags) {
+	if (DebugFlags || no_daemonize) {
 # else
-	if (0) {
+	if (no_daemonize) {
 # endif
 		(void) fprintf(stderr, "[%d] cron started\n", getpid());
 	} else {
@@ -512,7 +513,7 @@ parse_args(argc, argv)
 	int	argch;
 	char	*endp;
 
-	while ((argch = getopt(argc, argv, "j:J:m:osx:")) != -1) {
+	while ((argch = getopt(argc, argv, "j:J:m:osnx:")) != -1) {
 		switch (argch) {
 		case 'j':
 			Jitter = strtoul(optarg, &endp, 10);
@@ -528,6 +529,9 @@ parse_args(argc, argv)
 			break;
 		case 'm':
 			defmailto = optarg;
+			break;
+		case 'n':
+			no_daemonize = 1;
 			break;
 		case 'o':
 			dst_enabled = 0;

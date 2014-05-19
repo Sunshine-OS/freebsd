@@ -67,6 +67,7 @@ static int	mallocd_svcport = 0;
 static int	*sock_fd;
 static int	sock_fdcnt;
 static int	sock_fdpos;
+static int	no_daemonize = 0;
 
 static int	create_service(struct netconfig *nconf);
 static void	complete_service(struct netconfig *nconf, char *port_str);
@@ -90,7 +91,7 @@ main(int argc, char **argv)
   int attempt_cnt, port_len, port_pos, ret;
   char **port_list;
 
-  while ((ch = getopt(argc, argv, "dh:p:")) != -1)
+  while ((ch = getopt(argc, argv, "ndh:p:")) != -1)
     switch (ch) {
     case 'd':
       debug = 1;
@@ -124,6 +125,9 @@ main(int argc, char **argv)
 	usage();
       
       svcport_str = strdup(optarg);
+      break;
+    case 'n':
+      no_daemonize = 1;
       break;
     default:
       usage();
@@ -285,7 +289,10 @@ main(int argc, char **argv)
 
   /* Note that it is NOT sensible to run this program from inetd - the 	*/
   /* protocol assumes that it will run immediately at boot time.	*/
+
+  if (!no_daemonize) {
   daemon(0, 0);
+  }
   openlog("rpc.statd", 0, LOG_DAEMON);
   if (debug) syslog(LOG_INFO, "Starting - debug enabled");
   else syslog(LOG_INFO, "Starting");

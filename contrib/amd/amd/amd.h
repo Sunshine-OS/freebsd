@@ -281,6 +281,7 @@ struct amu_global_options {
   char *mount_type;		/* mount type for map */
   char *debug_mtab_file;        /* path for the mtab file during debug mode */
   u_int flags;			/* various CFM_* flags */
+  int nodaemon;                 /* prevents forking into background if 1 */
 
 #define AMU_TYPE_NONE -1	/* for amfs_auto_{timeo,retrans,toplvl} */
 #define AMU_TYPE_UDP 0		/* for amfs_auto_{timeo,retrans,toplvl} */

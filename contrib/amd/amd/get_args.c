@@ -131,7 +131,7 @@ show_usage(void)
 \t[-k kernel_arch] [-l logfile%s\n\
 \t[-t timeout.retrans] [-w wait_timeout] [-A arch] [-C cluster_name]\n\
 \t[-o op_sys_ver] [-O op_sys_name]\n\
-\t[-F conf_file] [-T conf_tag]", am_get_progname(),
+\t[-F conf_file] [-T conf_tag] [-N nodaemon]", am_get_progname(),
 #ifdef HAVE_SYSLOG
 # ifdef LOG_DAEMON
 	  "|\"syslog[:facility]\"]"
@@ -162,7 +162,7 @@ get_args(int argc, char *argv[])
 {
   int opt_ch, i;
   FILE *fp = stdin;
-  char getopt_arguments[] = "+nprvSa:c:d:k:l:o:t:w:x:y:C:D:F:T:O:HA:";
+  char getopt_arguments[] = "+nprvSNa:c:d:k:l:o:t:w:x:y:C:D:F:T:O:HA:";
   char *getopt_args;
   int print_version = 0;	/* 1 means we should print version info */
 
@@ -292,6 +292,10 @@ get_args(int argc, char *argv[])
     case 'H':
       show_usage();
       exit(1);
+      break;
+
+    case 'N':
+      gopt.nodaemon = 1;
       break;
 
     case 'O':

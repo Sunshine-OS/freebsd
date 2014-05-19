@@ -90,6 +90,7 @@ static int	mallocd_svcport = 0;
 static int	*sock_fd;
 static int	sock_fdcnt;
 static int	sock_fdpos;
+static int	no_daemonize = 0;
 int nhosts = 0;
 int xcreated = 0;
 char **addrs;			/* actually (netid, uaddr) pairs */
@@ -126,7 +127,7 @@ main(int argc, char **argv)
 	int attempt_cnt, port_len, port_pos, ret;
 	char **port_list;
 
-	while ((ch = getopt(argc, argv, "d:g:h:p:")) != (-1)) {
+	while ((ch = getopt(argc, argv, "d:g:h:p:n")) != (-1)) {
 		switch (ch) {
 		case 'd':
 			debug_level = atoi(optarg);
@@ -163,6 +164,9 @@ main(int argc, char **argv)
 				out_of_mem();
 			}
 			break;
+		case 'n':
+                        no_daemonize = 1;
+                        break;
 		case 'p':
 			endptr = NULL;
 			svcport = (in_port_t)strtoul(optarg, &endptr, 10);
@@ -424,9 +428,11 @@ main(int argc, char **argv)
 	 * Note that it is NOT sensible to run this program from inetd - the
 	 * protocol assumes that it will run immediately at boot time.
 	 */
-	if (daemon(0, debug_level > 0)) {
-		err(1, "cannot fork");
-		/* NOTREACHED */
+	if (!no_daemonize) {
+		if (daemon(0, debug_level > 0)) {
+			err(1, "cannot fork");
+			/* NOTREACHED */
+		}
 	}
 
 	openlog("rpc.lockd", 0, LOG_DAEMON);

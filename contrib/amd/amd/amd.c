@@ -546,7 +546,7 @@ main(int argc, char *argv[])
   }
 #endif /* HAVE_MAP_NIS */
 
-  if (!amuDebug(D_DAEMON))
+  if ((!amuDebug(D_DAEMON)) && (!gopt.nodaemon))
     ppid = daemon_mode();
 
   /*
