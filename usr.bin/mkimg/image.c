@@ -98,10 +98,10 @@ image_copyout(int fd)
 
 	ofs = lseek(fd, 0L, SEEK_CUR);
 
+	if (lseek(image_fd, 0, SEEK_SET) != 0)
+		return (errno);
 	buffer = malloc(BUFFER_SIZE);
 	if (buffer == NULL)
-		return (errno);
-	if (lseek(image_fd, 0, SEEK_SET) != 0)
 		return (errno);
 	error = 0;
 	while (1) {
@@ -119,8 +119,12 @@ image_copyout(int fd)
 		}
 	}
 	free(buffer);
+	if (error)
+		return (error);
 	ofs = lseek(fd, 0L, SEEK_CUR);
-	ftruncate(fd, ofs);
+	if (ofs == -1)
+		return (errno);
+	error = (ftruncate(fd, ofs) == -1) ? errno : 0;
 	return (error);
 }
 
